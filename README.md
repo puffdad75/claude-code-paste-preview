@@ -5,12 +5,14 @@
   <p><strong>English</strong> | <a href="README.zh-TW.md">繁體中文</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a></p>
 </div>
 
+> **This fork** (puffdad75) adds a **Clip button** on Windows: an orange `✂️ Clip` pill above the prompt. Click it (or type `/snip`) and the Windows snip overlay opens; the screenshot is pasted into the prompt for you and the editor opens on it. Original project: [alan890104/claude-code-paste-preview](https://github.com/alan890104/claude-code-paste-preview).
+
 ## Install
 
 At the prompt of a Claude Code session in a terminal:
 
 ```
-/plugin install paste-preview --marketplace alan890104/claude-code-paste-preview
+/plugin install paste-preview --marketplace puffdad75/claude-code-paste-preview
 ```
 
 Answer `y` to add the marketplace, then pick a scope (user scope loads it in every session). It runs at once, with no restart.
@@ -78,7 +80,7 @@ In a plain browser tab (the default browser on Linux or Windows, where no Chromi
 ## Development
 
 ```sh
-git clone https://github.com/alan890104/claude-code-paste-preview
+git clone https://github.com/puffdad75/claude-code-paste-preview
 cd claude-code-paste-preview
 claude --plugin-dir .            # run Claude Code with the mod loaded from this folder
 claude plugin validate .         # what the engine will load and refuse

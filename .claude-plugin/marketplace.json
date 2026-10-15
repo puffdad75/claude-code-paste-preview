@@ -1,6 +1,6 @@
 {
   "name": "paste-preview",
   "description": "paste-preview: see and mark up the images you paste into Claude Code",
-  "owner": { "name": "alan890104" },
+  "owner": { "name": "puffdad75" },
   "plugins": [{ "name": "paste-preview", "source": "./" }]
 }

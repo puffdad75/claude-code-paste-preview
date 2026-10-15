@@ -5,12 +5,14 @@
   <p><a href="README.md">English</a> | <strong>繁體中文</strong> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a></p>
 </div>
 
+> **本 fork**（puffdad75）在 Windows 多一顆 **Clip 按鈕**：輸入框上方的橘色 `✂️ Clip`。點它（或打 `/snip`）會開 Windows 截圖框，截完自動貼進輸入框並開啟編輯器。原專案：[alan890104/claude-code-paste-preview](https://github.com/alan890104/claude-code-paste-preview)。
+
 ## 安裝
 
 在終端機裡 Claude Code session 的輸入框輸入：
 
 ```
-/plugin install paste-preview --marketplace alan890104/claude-code-paste-preview
+/plugin install paste-preview --marketplace puffdad75/claude-code-paste-preview
 ```
 
 按 `y` 加入 marketplace，再選一個 scope（選 user scope 會在每個 session 載入）。安裝後立刻生效，不用重開。
@@ -78,7 +80,7 @@ https://github.com/user-attachments/assets/d68fe9a9-9179-4e3e-868f-2049647287cb
 ## 開發
 
 ```sh
-git clone https://github.com/alan890104/claude-code-paste-preview
+git clone https://github.com/puffdad75/claude-code-paste-preview
 cd claude-code-paste-preview
 claude --plugin-dir .            # run Claude Code with the mod loaded from this folder
 claude plugin validate .         # what the engine will load and refuse

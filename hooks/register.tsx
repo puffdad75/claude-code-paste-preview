@@ -4,6 +4,7 @@ import type { EngineInterface, ImageSource, Register } from 'claude-code'
 import type { Shot } from '../types'
 import { clipboardSteps, editorArgv, editsRoot, engineRoot, fromBase64, headStep, isMissing, join, LANGUAGE_PS, langOf, localeOf, osOf, sizeOf, sweepStep, thumbOf } from './platform'
 import type { Env, Lang, Os, Step } from './platform'
+import { registerSnip, startSnip, withClip } from './snip'
 
 // paste-preview: a pasted image is only "[Image #1]" in the prompt box, which says
 // nothing about which picture it is. So, as in a chat app, a paste opens an editor at
@@ -415,8 +416,10 @@ export const dropOriginals = <B extends { type: string; [field: string]: unknown
 }
 
 export const register: Register = on => {
+  registerSnip(on)
   on('session.start', async ($, e, next) => {
     void setUp($).then(() => keepWarm($)).catch(() => undefined)
+    void startSnip($).catch(() => undefined)
     $.clock.every(500, () => void tick($).catch(() => undefined))
     return next(e)
   })
@@ -486,7 +489,8 @@ export const register: Register = on => {
     )
   })
 
-  on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
+  // The Clip button is drawn above whatever this band draws (snip.tsx).
+  on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => withClip($, e, await (async () => {
     if (e.surface !== 'terminal' || e.props.hasSurvey) return next(e)
     const ns = await read($, inBox)
     if (ns.length === 0) return next(e)
@@ -519,5 +523,5 @@ export const register: Register = on => {
         })}
       </Box>
     )
-  })
+  })()))
 }
