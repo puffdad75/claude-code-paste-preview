@@ -5,7 +5,7 @@
   <p><a href="README.md">English</a> | <strong>繁體中文</strong> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a></p>
 </div>
 
-> **本 fork**（puffdad75）在 Windows 多一顆 **Clip 按鈕**：輸入框上方的橘色 `✂️ Clip`。點它（或打 `/snip`）會開 Windows 截圖框，截完自動貼進輸入框並開啟編輯器。原專案：[alan890104/claude-code-paste-preview](https://github.com/alan890104/claude-code-paste-preview)。
+> **本 fork**（puffdad75）在 Windows 多一顆 **Clip 按鈕**：輸入框上方的橘色 `✂️ Clip`。點它（或打 `/snip`）會開 Windows 截圖框，截完自動貼進輸入框並開啟編輯器。旁邊的 `📎 File`（或打 `/attach`）會開 Windows「開啟」視窗：選的圖片變成 `[Image #N]` 直接附上、不開編輯器（要畫再按縮圖列的「編輯」），其他檔案放路徑。原專案：[alan890104/claude-code-paste-preview](https://github.com/alan890104/claude-code-paste-preview)。
 
 ## 安裝
 

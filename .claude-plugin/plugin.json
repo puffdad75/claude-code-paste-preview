@@ -1,7 +1,7 @@
 {
   "name": "paste-preview",
-  "version": "0.3.0",
-  "description": "See and mark up the images you paste into Claude Code: thumbnails above the prompt and in the transcript, and an editor that opens on paste, plus a Clip button above the prompt on Windows that snips the screen and pastes it",
+  "version": "0.4.0",
+  "description": "See and mark up the images you paste into Claude Code: thumbnails above the prompt and in the transcript, and an editor that opens on paste, plus Clip and File buttons above the prompt on Windows: snip the screen, or attach files from the Open dialog",
   "author": { "name": "alan890104", "url": "https://github.com/alan890104" },
   "homepage": "https://github.com/puffdad75/claude-code-paste-preview",
   "repository": "https://github.com/puffdad75/claude-code-paste-preview",

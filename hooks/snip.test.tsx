@@ -78,3 +78,56 @@ test('during a survey the band is left to the engine', async ($, on) => {
   expect(await band.find({ type: 'Button', key: 'snip' })).toBeUndefined()
   await band.unmount()
 })
+
+test('the File button sits beside the Clip button on Windows', async ($, on) => {
+  onOs(on, 'Windows_NT')
+  engine(on)
+  const band = await $.ui.mount({ ...BAND, surface: 'terminal' })
+  expect(await band.find({ type: 'Button', key: 'attach' })).toBeDefined()
+  await band.unmount()
+})
+
+test('a File press runs the attach script once and types nothing itself', async ($, on) => {
+  const runs: string[][] = []
+  const fills: string[] = []
+  onOs(on, 'Windows_NT')
+  engine(on)
+  on('process.run', ($, e) => {
+    runs.push([...e.argv])
+    return { value: { exitCode: 0, stdout: 'PASTED\r\n', stderr: '', isStdoutTruncated: false, isStderrTruncated: false } }
+  })
+  on('prompt.fill', ($, e) => {
+    fills.push(e.text)
+    return { isFilled: true }
+  })
+  const band = await $.ui.mount({ ...BAND, surface: 'terminal' })
+  await band.press({ key: 'attach' })
+  await new Promise(resolve => setTimeout(resolve, 50))
+  const attaches = runs.filter(argv => argv.at(-1)?.endsWith('/scripts/attach.ps1'))
+  expect(attaches.length).toBe(1)
+  expect(attaches[0]?.[0]).toBe('powershell.exe')
+  // The paths arrive as a paste from the script's Ctrl+V, never as typed text.
+  expect(fills).toEqual([])
+  await band.unmount()
+})
+
+test('a cancelled dialog runs once and leaves the box alone', async ($, on) => {
+  const runs: string[][] = []
+  const fills: string[] = []
+  onOs(on, 'Windows_NT')
+  engine(on)
+  on('process.run', ($, e) => {
+    runs.push([...e.argv])
+    return { value: { exitCode: 2, stdout: '', stderr: '', isStdoutTruncated: false, isStderrTruncated: false } }
+  })
+  on('prompt.fill', ($, e) => {
+    fills.push(e.text)
+    return { isFilled: true }
+  })
+  const band = await $.ui.mount({ ...BAND, surface: 'terminal' })
+  await band.press({ key: 'attach' })
+  await new Promise(resolve => setTimeout(resolve, 50))
+  expect(runs.filter(argv => argv.at(-1)?.endsWith('/scripts/attach.ps1')).length).toBe(1)
+  expect(fills).toEqual([])
+  await band.unmount()
+})

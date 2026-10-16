@@ -5,7 +5,7 @@
   <p><strong>English</strong> | <a href="README.zh-TW.md">繁體中文</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a></p>
 </div>
 
-> **This fork** (puffdad75) adds a **Clip button** on Windows: an orange `✂️ Clip` pill above the prompt. Click it (or type `/snip`) and the Windows snip overlay opens; the screenshot is pasted into the prompt for you and the editor opens on it. Original project: [alan890104/claude-code-paste-preview](https://github.com/alan890104/claude-code-paste-preview).
+> **This fork** (puffdad75) adds a **Clip button** on Windows: an orange `✂️ Clip` pill above the prompt. Click it (or type `/snip`) and the Windows snip overlay opens; the screenshot is pasted into the prompt for you and the editor opens on it. Beside it, `📎 File` (or `/attach`) opens the Windows Open dialog: chosen images arrive as `[Image #N]` without the editor (its Edit button is in the band), other files as their path. Original project: [alan890104/claude-code-paste-preview](https://github.com/alan890104/claude-code-paste-preview).
 
 ## Install
 

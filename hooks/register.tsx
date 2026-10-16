@@ -4,7 +4,7 @@ import type { EngineInterface, ImageSource, Register } from 'claude-code'
 import type { Shot } from '../types'
 import { clipboardSteps, editorArgv, editsRoot, engineRoot, fromBase64, headStep, isMissing, join, LANGUAGE_PS, langOf, localeOf, osOf, sizeOf, sweepStep, thumbOf } from './platform'
 import type { Env, Lang, Os, Step } from './platform'
-import { registerSnip, startSnip, withClip } from './snip'
+import { isQuietPaste, registerSnip, startSnip, withClip } from './snip'
 
 // paste-preview: a pasted image is only "[Image #1]" in the prompt box, which says
 // nothing about which picture it is. So, as in a chat app, a paste opens an editor at
@@ -324,8 +324,10 @@ const enqueue = ($: EngineInterface, n: number, file?: string) => {
 // The editor opens on the file as soon as it is found; the band's thumbnail is made
 // beside it, not before it.
 const capture = async ($: EngineInterface, n: number) => {
+  // Read before the first await: a paste of the File button's (snip.tsx) skips the editor.
+  const isQuiet = isQuietPaste()
   const file = (await engineCopy($, n)) ?? (await clipboardCopy($, n)) ?? ''
-  if (file !== '') enqueue($, n, file)
+  if (file !== '' && !isQuiet) enqueue($, n, file)
   await refresh($, n, file, false)
 }
 
