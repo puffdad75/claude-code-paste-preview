@@ -131,3 +131,27 @@ test('a cancelled dialog runs once and leaves the box alone', async ($, on) => {
   expect(fills).toEqual([])
   await band.unmount()
 })
+
+// Three pastes of about 1 MiB each: under the one-picture limit, past the engine's 2 MiB
+// of Image source per tree together. The band must still draw, buttons and all.
+test('three large pictures in the box still draw the band, the buttons included', async ($, on) => {
+  const shots = [1, 2, 3].map(n => ({ n, file: `C:/p/${n}.png`, thumb: `C:/p/${n}.png`, gen: 0, width: 1600, height: 900, isEdited: false, ratio: 16 / 9, isLarge: false }))
+  const state: Record<string, unknown> = { shots, inBox: [1, 2, 3] }
+  onOs(on, 'Windows_NT')
+  engine(on)
+  on('state.get', ($, e) => ({ value: { value: state[e.key], version: 1 } }))
+  // A PNG's first 33 bytes (signature and header), then zeros: about 1 MiB as base64.
+  const big = PIXEL.slice(0, 44) + 'A'.repeat(1_000_000 - 44)
+  on('fs.read', () => ({ value: { base64: big } }))
+  const band = await $.ui.mount({ ...BAND, surface: 'terminal', viewport: { columns: 105, rows: 46, isFullscreen: true } })
+  expect(await band.find({ type: 'Button', key: 'attach' })).toBeDefined()
+  expect(await band.find({ type: 'Button', key: 'snip' })).toBeDefined()
+  const images = await band.findAll({ type: 'Image' })
+  expect(images.length).toBe(3)
+  const embedded = images.reduce((sum, image) => {
+    const source = image.props.source as { png?: string }
+    return sum + (source.png?.length ?? 0)
+  }, 0)
+  expect(embedded).toBeLessThanOrEqual(2 * 1024 * 1024)
+  await band.unmount()
+})
