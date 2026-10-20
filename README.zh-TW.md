@@ -5,7 +5,7 @@
   <p><a href="README.md">English</a> | <strong>繁體中文</strong> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a></p>
 </div>
 
-> **本 fork**（puffdad75）在 Windows 多一顆 **Clip 按鈕**：輸入框上方的橘色 `✂️ Clip`。點它（或打 `/snip`）會開 Windows 截圖框，截完自動貼進輸入框並開啟編輯器。旁邊的 `📎 File`（或打 `/attach`）會開 Windows「開啟」視窗：選的圖片變成 `[Image #N]` 直接附上、不開編輯器（要畫再按縮圖列的「編輯」），其他檔案放路徑。三顆按鈕（Clip、File、編輯）都是滑鼠一按下就動，不用等放開，回饋也一致：移上去反白、執行中變灰。原專案：[alan890104/claude-code-paste-preview](https://github.com/alan890104/claude-code-paste-preview)。
+> **這是 [alan890104/claude-code-paste-preview](https://github.com/alan890104/claude-code-paste-preview) 的 fork**。多了三顆 Windows 按鈕（Clip、File，以及改過的編輯），見 [本 fork 新增的功能](#本-fork-新增的功能)。其餘都是原專案。
 
 ## 安裝
 
@@ -25,6 +25,23 @@ https://github.com/user-attachments/assets/d68fe9a9-9179-4e3e-868f-2049647287cb
 - **送出前可以標註**：一貼上，編輯器就自動跳出來，有畫筆、圈、框、箭頭、文字、裁切、旋轉、七種顏色和復原。改完按 Enter，不想改就按 Esc，保留貼上的原圖。
 - **Claude 收到的是標註過的圖**：按 Enter 送出時，貼上的原圖會從訊息裡拿掉，並告訴 Claude 去讀改過的那張。
 - **macOS 上全螢幕也能用**：編輯器是原生的浮動面板，像 Spotlight 一樣浮在全螢幕的終端機上，不會切換 Space，關掉之後按鍵會回到輸入框。面板平常在背景待命，所以一貼上就立刻出現（待命時約佔 100 MB 記憶體；閒置 20 分鐘會自動結束，你一開始打字就會再啟動）。Linux 和 Windows 上，編輯器是瀏覽器的 app 視窗。
+
+## 本 fork 新增的功能
+
+只有 Windows。按鈕在輸入框上方，macOS 和 Linux 不會畫出來。
+
+| | |
+|---|---|
+| `✂️ Clip`（或打 `/snip`） | 開 Windows 截圖框（就是 Win+Shift+S 開的那個）。截完自動貼進輸入框變成 `[Image #N]`，並開啟編輯器。 |
+| `📎 File`（或打 `/attach`） | 開 Windows「開啟」視窗（可多選）。選的圖片變成 `[Image #N]` 直接附上，**不開**編輯器（要畫再按縮圖列的「編輯」）；其他檔案放它的路徑。 |
+| **編輯**（每張縮圖下面） | 原專案就有的按鈕，改成和上面兩顆一樣的行為。 |
+
+和原專案按鈕的差別：
+
+- **滑鼠一按下就動**，不用等放開。Claude Code 內建的按鈕要放開才算，按住時游標移了一格就會把這次點擊丟掉；本 fork 的按鈕直接聽「按下」這個動作。
+- **三顆回饋一致**：游標移上去反白、按下去變灰一下（Clip 和 File 在視窗還開著時會一直灰著並顯示 ⏳）。執行中再按一次不會有任何動作。
+- **編輯只能用滑鼠點。** 原版的 `ctrl+x tab` 加數字鍵已經不能用：這樣畫出來的按鈕沒辦法同時接收按鍵。
+- PowerShell 小幫手會把用到的幾個 Windows 呼叫編譯一次、快取在 `%TEMP%\claude-paste-preview\`，所以按下去視窗出現得更快（File 約 0.34 秒、Clip 約 0.72 秒，其中約 0.5 秒是 Windows 截圖框自己的時間）。
 
 ## 需求
 
@@ -55,7 +72,7 @@ https://github.com/user-attachments/assets/d68fe9a9-9179-4e3e-868f-2049647287cb
 | Enter | 完成 |
 | Esc | 取消，保留貼上的原圖 |
 
-要再編輯一次，按輸入框上方縮圖下的**編輯**（本 fork 的編輯按鈕只能用滑鼠點：原版的 `ctrl+x tab` 加數字鍵已拿掉）。
+要再編輯一次，按輸入框上方縮圖下的**編輯**（本 fork 只能用滑鼠點，見 [本 fork 新增的功能](#本-fork-新增的功能)）。
 
 編輯器和縮圖標籤的文字會跟著系統語言（macOS 取第一個偏好語言；Linux 依序看 `LC_ALL`、`LC_MESSAGES`、`LANG`；Windows 取介面語言），支援五種：英文、繁體中文（`zh-Hant`，以及 `zh-TW`、`zh-HK`、`zh-MO`）、簡體中文（`zh-Hans`，以及其他所有 `zh`：`zh-CN`、`zh-SG`、單獨的 `zh`）、日文（`ja`）和韓文（`ko`）。其他語言一律顯示英文。這份 README 也有同樣五種語言的版本，連結在頁面最上方。
 
@@ -96,6 +113,10 @@ node test/live.mjs               # Linux, Windows: a live session pasted into, o
 | 路徑 | |
 |---|---|
 | `hooks/register.tsx` | mod 本體：找出貼上的圖、縮圖、編輯器的佇列、按 Enter 時的處理 |
+| `hooks/snip.tsx` | Clip 和 File 按鈕，以及 `/snip`、`/attach` 指令（Windows） |
+| `hooks/pill.tsx` | Clip 和 File 按鈕：按下、反白、執行中變灰 |
+| `hooks/press.tsx` | 編輯按鈕用的同一套按下與反白 |
+| `scripts/snip.ps1`、`scripts/attach.ps1` | 按 Clip 或 File 時執行的腳本；`scripts/native.ps1` 是它們共用、有快取的 Windows 呼叫 |
 | `hooks/platform.ts` | macOS、Linux 和 Windows 之間的差異：資料夾、剪貼簿指令、啟動編輯器的指令 |
 | `editor/editor.html` | 編輯器（canvas） |
 | `editor/panel.swift` | 承載編輯器的浮動面板 |

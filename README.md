@@ -5,7 +5,7 @@
   <p><strong>English</strong> | <a href="README.zh-TW.md">繁體中文</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a></p>
 </div>
 
-> **This fork** (puffdad75) adds a **Clip button** on Windows: an orange `✂️ Clip` pill above the prompt. Click it (or type `/snip`) and the Windows snip overlay opens; the screenshot is pasted into the prompt for you and the editor opens on it. Beside it, `📎 File` (or `/attach`) opens the Windows Open dialog: chosen images arrive as `[Image #N]` without the editor (its Edit button is in the band), other files as their path. All three buttons (Clip, File, Edit) act the moment the mouse goes down, not when it is released, and look alike: highlighted under the pointer, greyed while they run. Original project: [alan890104/claude-code-paste-preview](https://github.com/alan890104/claude-code-paste-preview).
+> **This is a fork** of [alan890104/claude-code-paste-preview](https://github.com/alan890104/claude-code-paste-preview). It adds three Windows buttons (Clip, File, and a changed Edit); see [What this fork adds](#what-this-fork-adds). Everything else is the original.
 
 ## Install
 
@@ -25,6 +25,23 @@ A [Claude Code](https://claude.com/claude-code) mod for the images you paste. In
 - **You can mark it up before sending.** An editor opens the moment you paste: pen, ellipse, box, arrow, text, crop, rotate, seven colours, undo. Press Enter when done, or Esc to keep the picture as pasted.
 - **Claude gets the marked-up version.** At Enter the original paste is left out of the message and Claude is pointed at the edited picture.
 - **Full screen works on macOS.** There the editor is a native floating panel that sits over a full-screen terminal the way Spotlight does: no Space switch, and the keys return to the prompt when it closes. It waits ready in the background, so it appears the instant you paste (about 100 MB while it waits; after 20 minutes unused it quits, and comes back as you type). On Linux and Windows it opens as a browser app window.
+
+## What this fork adds
+
+Windows only. The buttons sit above the prompt and are not drawn on macOS or Linux.
+
+| | |
+|---|---|
+| `✂️ Clip` (or `/snip`) | opens the Windows snip overlay (what Win+Shift+S opens). When you finish the screenshot it is pasted into the prompt as `[Image #N]` and the editor opens on it. |
+| `📎 File` (or `/attach`) | opens the Windows Open dialog (multi-select). Chosen images arrive as `[Image #N]` with **no** editor (press **Edit** in the band if you want to draw); any other file arrives as its path. |
+| **Edit** (under each thumbnail) | the original's button, changed to act like the two above. |
+
+What differs from the original's buttons:
+
+- **They act when the mouse goes down**, not when it is released. Claude Code's own button only counts once you let go, and drops the click if the pointer moves a cell while held; the fork's buttons listen for the press itself.
+- **One look for all three**: highlighted under the pointer, greyed for a moment once pressed (Clip and File stay greyed, with ⏳, while their dialog is up). A second press while one is running does nothing.
+- **Edit is mouse-only.** The original's `ctrl+x tab`, then a number, no longer works: a button drawn this way cannot also take a key.
+- The PowerShell helpers compile their small Windows calls once and cache them in `%TEMP%\claude-paste-preview\`, so a press shows its window sooner (File about 0.34 s, Clip about 0.72 s, of which about 0.5 s is Windows' own snip overlay).
 
 ## Requirements
 
@@ -55,7 +72,7 @@ Paste an image as usual: Ctrl+V, or Alt+V on Windows and under WSL, the keys Cla
 | Enter | done |
 | Esc | cancel and keep the picture as pasted |
 
-To edit a picture again, press **Edit** under its thumbnail above the prompt (the fork's Edit button is mouse-only: the original's `ctrl+x tab` number keys are gone).
+To edit a picture again, press **Edit** under its thumbnail above the prompt (mouse only in this fork; see [What this fork adds](#what-this-fork-adds)).
 
 The editor and the thumbnail labels follow the system's language (macOS's first preferred language; on Linux `LC_ALL`, else `LC_MESSAGES`, else `LANG`; on Windows the UI culture) in five languages: English, Traditional Chinese (`zh-Hant`, and `zh-TW`, `zh-HK`, `zh-MO`), Simplified Chinese (`zh-Hans`, and any other `zh`: `zh-CN`, `zh-SG`, bare `zh`), Japanese (`ja`) and Korean (`ko`). Any other language gets English. This README is available in the same five languages, linked at the top.
 
@@ -96,6 +113,10 @@ Loading the folder once writes the engine's type declarations to `.claude-plugin
 | Path | |
 |---|---|
 | `hooks/register.tsx` | the mod: finding pastes, thumbnails, the editor queue, what happens at Enter |
+| `hooks/snip.tsx` | the Clip and File buttons and the `/snip` and `/attach` commands (Windows) |
+| `hooks/pill.tsx` | the Clip and File button: press, highlight, greyed while running |
+| `hooks/press.tsx` | the same press and highlight for the Edit button |
+| `scripts/snip.ps1`, `scripts/attach.ps1` | what a Clip or File press runs; `scripts/native.ps1` is their shared, cached Windows calls |
 | `hooks/platform.ts` | what differs on macOS, Linux and Windows: folders, clipboard commands, the editor's command |
 | `editor/editor.html` | the editor (canvas) |
 | `editor/panel.swift` | the floating panel that hosts the editor |
