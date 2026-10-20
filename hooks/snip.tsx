@@ -1,4 +1,5 @@
 import type { EngineInterface, Register } from 'claude-code'
+import type { PillProps } from './pill'
 
 // The Clip button (Windows only): a pill above the prompt that opens the Windows snip
 // overlay (what Win+Shift+S opens). Once the screenshot is on the clipboard the script
@@ -27,6 +28,7 @@ function onWindows($: EngineInterface) {
 async function snip($: EngineInterface) {
   if (isBusy) return
   isBusy = true
+  $.ui.invalidate('ui.render')
   try {
     const script = `${$.plugin.root}/scripts/snip.ps1`
     const ran = await $.process.run(['powershell.exe', '-NoProfile', '-Sta', '-ExecutionPolicy', 'Bypass', '-File', script], { timeoutMs: 90_000 })
@@ -37,6 +39,7 @@ async function snip($: EngineInterface) {
     $.ui.toast('截圖失敗：PowerShell 跑不起來')
   } finally {
     isBusy = false
+    $.ui.invalidate('ui.render')
   }
 }
 
@@ -53,6 +56,7 @@ async function attach($: EngineInterface) {
   if (isPicking) return
   isPicking = true
   quietUntil = Number.POSITIVE_INFINITY
+  $.ui.invalidate('ui.render')
   let pasted = false
   try {
     const script = `${$.plugin.root}/scripts/attach.ps1`
@@ -65,6 +69,7 @@ async function attach($: EngineInterface) {
   } finally {
     quietUntil = pasted ? Date.now() + QUIET_AFTER_MS : 0
     isPicking = false
+    $.ui.invalidate('ui.render')
   }
 }
 
@@ -78,24 +83,15 @@ export async function startSnip($: EngineInterface) {
 // register.tsx's band hook hands what it drew here: the Clip pill goes above it.
 export async function withClip($: EngineInterface, e: Parameters<typeof $.ui.resolve>[0] & { props: { hasSurvey?: boolean } }, below: unknown) {
   if (e.surface !== 'terminal' || e.props.hasSurvey || !(await onWindows($))) return below
-  const { Box, Button, Text } = $.ui.resolve(e)
-
-  // A pill: the terminal has no rounded corners, so the two ends are the Powerline
-  // half-circle glyphs in the pill's colour (they need a font that carries them).
-  const pill = (key: string, label: string, colour: string, press: () => void) => (
-    <Button key={key} plain onPress={press}>
-      <Text color={colour}>{'\uE0B6'}</Text>
-      <Text backgroundColor={colour} color="#ffffff" bold>{label}</Text>
-      <Text color={colour}>{'\uE0B4'}</Text>
-    </Button>
-  )
+  const { Box, Client } = $.ui.resolve(e)
 
   // File first, then Clip, each in its own colour so the two read apart at a glance.
+  // Each pill is a Client (pill.tsx): it presses on the mouse going down, see there.
   return (
     <Box flexDirection="column">
       <Box flexDirection="row" columnGap={2}>
-        {pill('attach', ' 📎 File ', TEAL, () => void attach($))}
-        {pill('snip', ' ✂️ Clip ', ORANGE, () => void snip($))}
+        <Client key={ATTACH} module="./pill.tsx" props={{ id: ATTACH, label: ' 📎 File ', colour: TEAL, busy: isPicking } satisfies PillProps} />
+        <Client key={COMMAND} module="./pill.tsx" props={{ id: COMMAND, label: ' ✂️ Clip ', colour: ORANGE, busy: isBusy } satisfies PillProps} />
       </Box>
       {below}
     </Box>
@@ -103,6 +99,14 @@ export async function withClip($: EngineInterface, e: Parameters<typeof $.ui.res
 }
 
 export const registerSnip: Register = on => {
+  // A pill's press, posted from pill.tsx: code sent it, so only the two known ids act.
+  on('ui.message', { module: 'hooks/pill.tsx' }, async ($, e, next) => {
+    const press = (e.data as { press?: unknown } | null)?.press
+    if (press === COMMAND) void snip($)
+    else if (press === ATTACH) void attach($)
+    return next(e)
+  })
+
   on('command.run', { command: COMMAND }, async $ => {
     void snip($)
 

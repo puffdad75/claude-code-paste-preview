@@ -15,7 +15,8 @@
 # Prints PASTED, or nothing when cancelled. Exit: 0 pasted, 2 cancelled.
 # ASCII only (no BOM needed).
 Add-Type -AssemblyName System.Windows.Forms
-Add-Type @"
+. (Join-Path $PSScriptRoot 'native.ps1')
+Add-NativeType @"
 using System;
 using System.Runtime.InteropServices;
 public static class AttachPaste {

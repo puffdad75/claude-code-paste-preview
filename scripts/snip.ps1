@@ -3,8 +3,8 @@
 # Prints one word: PASTED, CANCELLED or TIMEOUT. ASCII only (no BOM needed).
 param([int]$TimeoutSec = 60)
 
-Add-Type -AssemblyName System.Windows.Forms
-Add-Type @"
+. (Join-Path $PSScriptRoot 'native.ps1')
+Add-NativeType @"
 using System;
 using System.Runtime.InteropServices;
 public static class SnipPaste {
@@ -17,6 +17,8 @@ public static class SnipPaste {
 $origin = [SnipPaste]::GetForegroundWindow()
 $before = [SnipPaste]::GetClipboardSequenceNumber()
 Start-Process 'ms-screenclip:'
+# Forms (the clipboard read and the key sent) loads while the overlay comes up.
+Add-Type -AssemblyName System.Windows.Forms
 
 $deadline = (Get-Date).AddSeconds($TimeoutSec)
 $hasLeft = $false   # the overlay took the focus at least once
