@@ -238,6 +238,28 @@ for (const os of ['mac', 'linux', 'windows'] as const) {
   })
 }
 
+// Edit presses on the mouse going down (press.tsx draws it as a Client); a double click
+// opens one editor.
+test('linux: Edit opens the editor again on the button going down, once per press', async ($, on) => {
+  const clock = mock.clock(on)
+  const { w, box } = world(on, SYSTEMS.linux)
+  await paste($, box)
+  await until(clock, () => w.spawns.length > 0)
+  await until(clock, () => false)
+  const band = await $.ui.mount({ ...BAND })
+  expect((await band.find({ type: 'Client', key: 'edit-1' }))?.props.props).toMatchObject({ id: 'edit-1' })
+  const before = w.spawns.length
+  await band.pointer({ type: 'down', x: 1, y: 0, button: 'right', in: 'edit-1' })
+  await until(clock, () => false)
+  expect(w.spawns.length).toBe(before)
+  await band.pointer({ type: 'down', x: 1, y: 0, button: 'left', in: 'edit-1' })
+  await band.pointer({ type: 'down', x: 1, y: 0, button: 'left', in: 'edit-1' })
+  await until(clock, () => false)
+  expect(w.spawns.length).toBe(before + 1)
+  expect(w.spawns.at(-1)?.[1]).toMatch(/[\\/]editor[\\/]server\.mjs$/)
+  await band.unmount()
+})
+
 test('linux: no copy kept and no clipboard tool installed says what to install, once', async ($, on) => {
   const clock = mock.clock(on)
   const { w, box } = world(on, SYSTEMS.linux, { copy: false, tools: { 'wl-paste': { exitCode: 127 }, xclip: { exitCode: 127 } } })

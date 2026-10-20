@@ -4,6 +4,7 @@ import type { EngineInterface, ImageSource, Register } from 'claude-code'
 import type { Shot } from '../types'
 import { clipboardSteps, editorArgv, editsRoot, engineRoot, fromBase64, headStep, isMissing, join, LANGUAGE_PS, langOf, localeOf, osOf, sizeOf, sweepStep, thumbOf } from './platform'
 import type { Env, Lang, Os, Step } from './platform'
+import type { PressProps } from './press'
 import { isQuietPaste, registerSnip, startSnip, withClip } from './snip'
 
 // paste-preview: a pasted image is only "[Image #1]" in the prompt box, which says
@@ -321,6 +322,17 @@ const enqueue = ($: EngineInterface, n: number, file?: string) => {
   queue = queue.then(() => edit($, n, file)).catch(() => undefined)
 }
 
+// An Edit press (press.tsx), on the mouse going down: the same picture pressed again
+// within a moment (a double click) opens no second editor.
+const AGAIN_MS = 800
+const lastPress = new Map<number, number>()
+const pressEdit = ($: EngineInterface, n: number) => {
+  const now = Date.now()
+  if (now - (lastPress.get(n) ?? 0) < AGAIN_MS) return
+  lastPress.set(n, now)
+  enqueue($, n)
+}
+
 // The editor opens on the file as soon as it is found; the band's thumbnail is made
 // beside it, not before it.
 const capture = async ($: EngineInterface, n: number) => {
@@ -442,6 +454,13 @@ export const dropOriginals = <B extends { type: string; [field: string]: unknown
 
 export const register: Register = on => {
   registerSnip(on)
+  // An Edit press posted from press.tsx: code sent it, so only a known key acts.
+  on('ui.message', { module: 'hooks/press.tsx' }, async ($, e, next) => {
+    const press = (e.data as { press?: unknown } | null)?.press
+    const n = typeof press === 'string' ? Number(/^edit-(\d+)$/.exec(press)?.[1]) : NaN
+    if (Number.isInteger(n)) pressEdit($, n)
+    return next(e)
+  })
   on('session.start', async ($, e, next) => {
     void setUp($).then(() => keepWarm($)).catch(() => undefined)
     void startSnip($).catch(() => undefined)
@@ -520,7 +539,7 @@ export const register: Register = on => {
     const ns = await read($, inBox)
     if (ns.length === 0) return next(e)
     const all = await read($, shots)
-    const { Box, Text, Button, Image } = $.ui.resolve(e)
+    const { Box, Text, Client, Image } = $.ui.resolve(e)
     // A number whose copy is still being found shows as #N alone until it lands.
     const drawn = ns.flatMap(n => all.filter(s => s.n === n && s.thumb !== ''))
     const sizes = fit(drawn, e.props.bodyColumns, bandRows(e.viewport?.rows))
@@ -528,12 +547,12 @@ export const register: Register = on => {
 
     return (
       <Box flexDirection="row" flexWrap="wrap" columnGap={2}>
-        {ns.map((n, i) => {
+        {ns.map(n => {
           const shot = all.find(s => s.n === n)
           const at = shot === undefined ? -1 : drawn.indexOf(shot)
           const source = pictures[at]
           const size = sizes[at]
-          const hotkey = i < 9 ? { hotkey: String(i + 1) } : {}
+          const press: PressProps = { id: `edit-${n}`, label: WORDS[lang].edit }
           return (
             <Box key={`shot-${n}`} flexDirection="column">
               {source !== undefined && size !== undefined && (
@@ -541,7 +560,7 @@ export const register: Register = on => {
               )}
               <Box flexDirection="row" columnGap={1}>
                 <Text key={`name-${n}`} dimColor>Image #{n}{shot?.isEdited ? ` ${WORDS[lang].edited}` : ''}</Text>
-                {shot !== undefined && shot.file !== '' && <Button key={`edit-${n}`} label={WORDS[lang].edit} plain {...hotkey} onPress={() => enqueue($, n)} />}
+                {shot !== undefined && shot.file !== '' && <Client key={`edit-${n}`} module="./press.tsx" props={press} />}
               </Box>
             </Box>
           )
