@@ -5,7 +5,7 @@
   <p><strong>English</strong> | <a href="README.zh-TW.md">繁體中文</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a></p>
 </div>
 
-> **This fork** (puffdad75) adds a **Clip button** on Windows: an orange `✂️ Clip` pill above the prompt. Click it (or type `/snip`) and the Windows snip overlay opens; the screenshot is pasted into the prompt for you and the editor opens on it. Beside it, `📎 File` (or `/attach`) opens the Windows Open dialog: chosen images arrive as `[Image #N]` without the editor (its Edit button is in the band), other files as their path. Original project: [alan890104/claude-code-paste-preview](https://github.com/alan890104/claude-code-paste-preview).
+> **This fork** (puffdad75) adds a **Clip button** on Windows: an orange `✂️ Clip` pill above the prompt. Click it (or type `/snip`) and the Windows snip overlay opens; the screenshot is pasted into the prompt for you and the editor opens on it. Beside it, `📎 File` (or `/attach`) opens the Windows Open dialog: chosen images arrive as `[Image #N]` without the editor (its Edit button is in the band), other files as their path. All three buttons (Clip, File, Edit) act the moment the mouse goes down, not when it is released, and look alike: highlighted under the pointer, greyed while they run. Original project: [alan890104/claude-code-paste-preview](https://github.com/alan890104/claude-code-paste-preview).
 
 ## Install
 
@@ -55,7 +55,7 @@ Paste an image as usual: Ctrl+V, or Alt+V on Windows and under WSL, the keys Cla
 | Enter | done |
 | Esc | cancel and keep the picture as pasted |
 
-To edit a picture again, press **Edit** under its thumbnail above the prompt (or `ctrl+x tab`, then its number).
+To edit a picture again, press **Edit** under its thumbnail above the prompt (the fork's Edit button is mouse-only: the original's `ctrl+x tab` number keys are gone).
 
 The editor and the thumbnail labels follow the system's language (macOS's first preferred language; on Linux `LC_ALL`, else `LC_MESSAGES`, else `LANG`; on Windows the UI culture) in five languages: English, Traditional Chinese (`zh-Hant`, and `zh-TW`, `zh-HK`, `zh-MO`), Simplified Chinese (`zh-Hans`, and any other `zh`: `zh-CN`, `zh-SG`, bare `zh`), Japanese (`ja`) and Korean (`ko`). Any other language gets English. This README is available in the same five languages, linked at the top.
 

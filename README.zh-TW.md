@@ -5,7 +5,7 @@
   <p><a href="README.md">English</a> | <strong>繁體中文</strong> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a></p>
 </div>
 
-> **本 fork**（puffdad75）在 Windows 多一顆 **Clip 按鈕**：輸入框上方的橘色 `✂️ Clip`。點它（或打 `/snip`）會開 Windows 截圖框，截完自動貼進輸入框並開啟編輯器。旁邊的 `📎 File`（或打 `/attach`）會開 Windows「開啟」視窗：選的圖片變成 `[Image #N]` 直接附上、不開編輯器（要畫再按縮圖列的「編輯」），其他檔案放路徑。原專案：[alan890104/claude-code-paste-preview](https://github.com/alan890104/claude-code-paste-preview)。
+> **本 fork**（puffdad75）在 Windows 多一顆 **Clip 按鈕**：輸入框上方的橘色 `✂️ Clip`。點它（或打 `/snip`）會開 Windows 截圖框，截完自動貼進輸入框並開啟編輯器。旁邊的 `📎 File`（或打 `/attach`）會開 Windows「開啟」視窗：選的圖片變成 `[Image #N]` 直接附上、不開編輯器（要畫再按縮圖列的「編輯」），其他檔案放路徑。三顆按鈕（Clip、File、編輯）都是滑鼠一按下就動，不用等放開，回饋也一致：移上去反白、執行中變灰。原專案：[alan890104/claude-code-paste-preview](https://github.com/alan890104/claude-code-paste-preview)。
 
 ## 安裝
 
@@ -55,7 +55,7 @@ https://github.com/user-attachments/assets/d68fe9a9-9179-4e3e-868f-2049647287cb
 | Enter | 完成 |
 | Esc | 取消，保留貼上的原圖 |
 
-要再編輯一次，按輸入框上方縮圖下的**編輯**（或按 `ctrl+x tab`，再按它的編號）。
+要再編輯一次，按輸入框上方縮圖下的**編輯**（本 fork 的編輯按鈕只能用滑鼠點：原版的 `ctrl+x tab` 加數字鍵已拿掉）。
 
 編輯器和縮圖標籤的文字會跟著系統語言（macOS 取第一個偏好語言；Linux 依序看 `LC_ALL`、`LC_MESSAGES`、`LANG`；Windows 取介面語言），支援五種：英文、繁體中文（`zh-Hant`，以及 `zh-TW`、`zh-HK`、`zh-MO`）、簡體中文（`zh-Hans`，以及其他所有 `zh`：`zh-CN`、`zh-SG`、單獨的 `zh`）、日文（`ja`）和韓文（`ko`）。其他語言一律顯示英文。這份 README 也有同樣五種語言的版本，連結在頁面最上方。
 
